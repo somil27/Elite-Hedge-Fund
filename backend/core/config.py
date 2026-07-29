@@ -13,7 +13,16 @@ class Settings(BaseSettings):
 
     # ── Database ──────────────────────────────────────────────
     database_url:      str = "postgresql+asyncpg://trader:trader_pass@postgres:5432/trading_system"
-    database_url_sync: str = "postgresql://trader:trader_pass@postgres:5432/trading_system"
+    
+    @property
+    def database_url_sync(self) -> str:
+        # Generate sync URL dynamically from the async/injected URL
+        url = self.database_url
+        if url.startswith("postgresql+asyncpg://"):
+            return url.replace("postgresql+asyncpg://", "postgresql://", 1)
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql://", 1)
+        return url
 
     # ── Redis ─────────────────────────────────────────────────
     redis_url: str = "redis://localhost:6379/0"
