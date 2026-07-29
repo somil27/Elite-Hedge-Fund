@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../store/api';
 import { Shield, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
 import GoogleLoginButton from '../components/auth/GoogleLoginButton';
@@ -20,7 +20,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await axios.post('/api/auth/register', {
+      await api.post('/auth/register', {
         email,
         password,
         name

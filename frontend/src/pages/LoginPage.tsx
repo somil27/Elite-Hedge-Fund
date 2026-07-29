@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../store/api';
 import { useAuthStore } from '../store/authStore';
 import { Briefcase, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
@@ -27,7 +27,7 @@ export default function LoginPage() {
       formData.append('username', email);
       formData.append('password', password);
 
-      const res = await axios.post('/api/auth/login', formData, {
+      const res = await api.post('/auth/login', formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
 

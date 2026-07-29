@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../store/api'
 import {
   TrendingUp, TrendingDown, Bell, BellOff, RefreshCw,
   Link, Unlink, BarChart2, AlertTriangle, Brain, ChevronRight,
@@ -10,7 +10,6 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
          PieChart as RechartsPie, Pie, Cell } from 'recharts'
 import { format } from 'date-fns'
 
-const api = axios.create({ baseURL: '/api/india' })
 const BROKERS = [
   { key: 'zerodha', label: 'Zerodha', color: '#387ed1', desc: 'Kite Connect' },
   { key: 'upstox',  label: 'Upstox',  color: '#6f42c1', desc: 'API v2' },
@@ -44,7 +43,7 @@ export default function IndiaPage() {
 
   const loadConnections = async () => {
     try {
-      const data = await api.get('/connections').then(r => r.data)
+      const data = await api.get('/india/connections').then(r => r.data)
       setConnections(data)
       const active = data.find((c: any) => c.is_active)
       if (active && !activeBroker) setActiveBroker(active.broker)
@@ -54,7 +53,7 @@ export default function IndiaPage() {
   const loadPortfolio = async (broker: string) => {
     setLoading(true)
     try {
-      const data = await api.get(`/${broker}/portfolio`).then(r => r.data)
+      const data = await api.get(`/india/${broker}/portfolio`).then(r => r.data)
       setPortfolio(data)
     } catch (e: any) {
       showToast(`❌ ${e?.response?.data?.detail || 'Failed to load portfolio'}`)
@@ -63,21 +62,21 @@ export default function IndiaPage() {
 
   const loadAlerts = async (broker: string) => {
     try {
-      const data = await api.get(`/${broker}/alerts`).then(r => r.data)
+      const data = await api.get(`/india/${broker}/alerts`).then(r => r.data)
       setAlerts(data)
     } catch {}
   }
 
   const loadHistory = async (broker: string) => {
     try {
-      const data = await api.get(`/${broker}/snapshot/history?days=30`).then(r => r.data)
+      const data = await api.get(`/india/${broker}/snapshot/history?days=30`).then(r => r.data)
       setHistory(data)
     } catch {}
   }
 
   const loadOrders = async (broker: string) => {
     try {
-      const data = await api.get(`/${broker}/orders`).then(r => r.data)
+      const data = await api.get(`/india/${broker}/orders`).then(r => r.data)
       setOrders(data)
     } catch {}
   }
@@ -85,7 +84,7 @@ export default function IndiaPage() {
   const runAnalysis = async (broker: string) => {
     setAnalysing(true)
     try {
-      const data = await api.get(`/${broker}/analysis`).then(r => r.data)
+      const data = await api.get(`/india/${broker}/analysis`).then(r => r.data)
       setAnalysis(data)
       setTab('analysis')
     } catch (e: any) {
@@ -95,7 +94,7 @@ export default function IndiaPage() {
 
   const runAlertCheck = async (broker: string) => {
     try {
-      const data = await api.post(`/${broker}/alerts/check`).then(r => r.data)
+      const data = await api.post(`/india/${broker}/alerts/check`).then(r => r.data)
       showToast(`✅ ${data.new_alerts} new alert(s) found`)
       await loadAlerts(broker)
     } catch { showToast('❌ Alert check failed') }
@@ -103,7 +102,7 @@ export default function IndiaPage() {
 
   const markRead = async (broker: string, alertId: string) => {
     try {
-      await api.post(`/${broker}/alerts/read`, { alert_ids: [alertId] })
+      await api.post(`/india/${broker}/alerts/read`, { alert_ids: [alertId] })
       setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, is_read: true } : a))
     } catch {}
   }
@@ -158,6 +157,8 @@ export default function IndiaPage() {
         {BROKERS.map(b => {
           const conn = connections.find(c => c.broker === b.key)
           const isConnected = conn?.is_active
+          const backendUrl = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:8000';
+          
           return (
             <div key={b.key} className={clsx(
               'card flex items-center justify-between transition-all duration-300 relative overflow-hidden group',
@@ -188,11 +189,11 @@ export default function IndiaPage() {
                   <span className="text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2 py-1 rounded flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Connected
                   </span>
-                  <a href={`/api/india/${b.key}/connections`}
+                  <a href={`${backendUrl}/api/india/${b.key}/connections`}
                     onClick={async (e) => {
                       e.stopPropagation()
                       try {
-                        await api.delete(`/connections/${b.key}`)
+                        await api.delete(`/india/connections/${b.key}`)
                         showToast(`${b.label} disconnected`)
                         await loadConnections()
                         if (activeBroker === b.key) setActiveBroker(null)
@@ -203,7 +204,7 @@ export default function IndiaPage() {
                   </a>
                 </div>
               ) : (
-                <a href={`/api/india/${b.key}/login`}
+                <a href={`${backendUrl}/api/india/${b.key}/login`}
                   className="btn-primary text-[13px] flex items-center gap-2 h-9 px-4">
                   <Link size={14} /> Connect
                 </a>
@@ -681,12 +682,15 @@ export default function IndiaPage() {
             Link your Zerodha or Upstox account to unlock live portfolio analytics, automated trading capabilities, and AI-powered market alerts.
           </p>
           <div className="flex justify-center gap-4">
-            {BROKERS.map(b => (
-              <a key={b.key} href={`/api/india/${b.key}/login`}
-                className="btn-primary h-11 px-6 flex items-center gap-2 shadow-sm">
-                <Link size={16} /> Connect {b.label}
-              </a>
-            ))}
+            {BROKERS.map(b => {
+              const backendUrl = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:8000';
+              return (
+                <a key={b.key} href={`${backendUrl}/api/india/${b.key}/login`}
+                  className="btn-primary h-11 px-6 flex items-center gap-2 shadow-sm">
+                  <Link size={16} /> Connect {b.label}
+                </a>
+              )
+            })}
           </div>
         </div>
       )}

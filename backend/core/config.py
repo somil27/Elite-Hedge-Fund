@@ -45,15 +45,28 @@ class Settings(BaseSettings):
     mock_initial_cash: float = 100_000.0
     mock_slippage_bps: float = 2.0
 
-    # Zerodha
-    zerodha_api_key:      str = ""
-    zerodha_api_secret:   str = ""
-    zerodha_redirect_uri: str = "http://localhost:8000/api/india/zerodha/callback"
-
-    # Upstox
-    upstox_api_key:      str = ""
-    upstox_api_secret:   str = ""
-    upstox_redirect_uri: str = "http://localhost:8000/api/india/upstox/callback"
+    # ── India Broker APIs ─────────────────────────────────────
+    zerodha_api_key: str = ""
+    zerodha_api_secret: str = ""
+    
+    @property
+    def zerodha_redirect_uri(self) -> str:
+        import os
+        render_url = os.getenv("RENDER_EXTERNAL_URL")
+        if render_url:
+            return f"{render_url}/api/india/zerodha/callback"
+        return "http://localhost:8000/api/india/zerodha/callback"
+        
+    upstox_api_key: str = ""
+    upstox_api_secret: str = ""
+    
+    @property
+    def upstox_redirect_uri(self) -> str:
+        import os
+        render_url = os.getenv("RENDER_EXTERNAL_URL")
+        if render_url:
+            return f"{render_url}/api/india/upstox/callback"
+        return "http://localhost:8000/api/india/upstox/callback"
 
     # Market data
     polygon_api_key: str = ""

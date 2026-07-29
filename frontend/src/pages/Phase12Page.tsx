@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../store/api'
 import {
   Brain, BarChart2, TrendingUp, RefreshCw, Play, Plus,
   ChevronDown, ChevronUp, Activity, Target, Zap,
@@ -9,8 +9,6 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine,
 } from 'recharts'
-
-const api = axios.create({ baseURL: '/api' })
 
 const TABS = [
   { key: 'strategies', label: 'Strategies',   icon: Zap },
