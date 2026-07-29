@@ -1,0 +1,40 @@
+services:
+  # 1. FastAPI Backend (Web Service)
+  - type: web
+    name: alphadesk-backend
+    env: docker
+    region: oregon
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerCommand: ./start.sh
+    plan: free
+    healthCheckPath: /docs
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: alphadesk-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: alphadesk-redis
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+
+  # 4. Redis Cache & Broker
+  - type: keyvalue
+    name: alphadesk-redis
+    plan: free
+    region: oregon
+    ipAllowList: [] # Allow all internal Render connections
+
+databases:
+  # 3. PostgreSQL Database
+  - name: alphadesk-db
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"

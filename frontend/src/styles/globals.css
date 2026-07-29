@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased tracking-tight;
+    min-height: 100vh;
+    /* Optional sleek subtle gradient at the very top for depth */
+    background-image: radial-gradient(ellipse at 50% -20%, rgba(99, 102, 241, 0.08), transparent 50%);
+  }
+
+  /* Custom scrollbar for webkit */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-active rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-primary rounded-full; }
+  
+  /* Selection color */
+  ::selection {
+    @apply bg-primary-glow text-white;
+  }
+}
+
+@layer components {
+  /* Cards */
+  .card {
+    @apply bg-surface border border-border rounded-xl p-5 shadow-card transition-shadow duration-200;
+  }
+  .card-sm {
+    @apply bg-surface border border-border rounded-lg p-3 shadow-sm;
+  }
+
+  /* Badges */
+  .badge-green {
+    @apply text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-success-dim text-success border border-success/20;
+  }
+  .badge-red {
+    @apply text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-danger-dim text-danger border border-danger/20;
+  }
+  .badge-gold {
+    @apply text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-warning-dim text-warning border border-warning/20;
+  }
+  .badge-muted {
+    @apply text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-surface-hover text-text-muted border border-border-bright;
+  }
+  .badge-primary {
+    @apply text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-primary-glow text-primary border border-primary/20;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply px-4 py-2 rounded-md bg-primary text-white font-medium text-sm
+           hover:bg-primary-hover shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-danger {
+    @apply px-4 py-2 rounded-md bg-danger text-white font-medium text-sm
+           hover:bg-danger-hover shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-danger/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply px-4 py-2 rounded-md border border-border bg-transparent text-text-secondary text-sm font-medium
+           hover:border-border-bright hover:text-text-primary hover:bg-surface transition-all focus:outline-none focus:ring-2 focus:ring-border-bright disabled:opacity-50;
+  }
+
+  /* Inputs */
+  .input-field {
+    @apply w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all;
+  }
+}
