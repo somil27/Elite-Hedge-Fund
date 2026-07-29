@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Shield, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
+import GoogleLoginButton from '../components/auth/GoogleLoginButton';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -53,6 +54,14 @@ export default function RegisterPage() {
         </div>
 
         <div className="card p-8 shadow-2xl border-border-bright bg-surface/80 backdrop-blur-xl">
+          <GoogleLoginButton />
+          
+          <div className="relative flex items-center py-5">
+            <div className="flex-grow border-t border-[#333333]"></div>
+            <span className="flex-shrink-0 mx-4 text-text-secondary text-[12px] uppercase font-medium">Or register with email</span>
+            <div className="flex-grow border-t border-[#333333]"></div>
+          </div>
+
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-danger/10 border border-danger/20 text-danger text-[13px] font-medium p-3 rounded-lg flex items-start gap-2">

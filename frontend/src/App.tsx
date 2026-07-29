@@ -139,8 +139,18 @@ function Layout({ children }: { children: React.ReactNode }) {
 }
 export default function App() {
   const fetchUser = useAuthStore(s => s.fetchUser)
+  const setToken = useAuthStore(s => s.setToken)
   
   useEffect(() => {
+    // Check if we just returned from Google OAuth
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      setToken(token);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
     fetchUser()
   }, [])
   
