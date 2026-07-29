@@ -67,7 +67,14 @@ class Settings(BaseSettings):
     # ── Google OAuth ──────────────────────────────────────────
     google_client_id:     str = ""
     google_client_secret: str = ""
-    google_redirect_uri:  str = "http://localhost:8000/api/auth/google/callback"
+    
+    @property
+    def google_redirect_uri(self) -> str:
+        import os
+        render_url = os.getenv("RENDER_EXTERNAL_URL")
+        if render_url:
+            return f"{render_url}/api/auth/google/callback"
+        return "http://localhost:8000/api/auth/google/callback"
 
     model_config = SettingsConfigDict(
         env_file=".env",
