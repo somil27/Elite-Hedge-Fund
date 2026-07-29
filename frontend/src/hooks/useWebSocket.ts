@@ -7,8 +7,11 @@ export function useWebSocket() {
 
   useEffect(() => {
     const connect = () => {
-      const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
-      const socket = new WebSocket(`${proto}://${window.location.host}/ws`)
+      // Build WebSocket URL from VITE_API_URL
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+      // Remove /api and replace http(s) with ws(s)
+      const wsUrl = backendUrl.replace(/\/api$/, '').replace(/^http/, 'ws') + '/ws';
+      const socket = new WebSocket(wsUrl)
       ws.current = socket
 
       socket.onopen = () => {

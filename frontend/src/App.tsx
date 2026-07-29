@@ -39,7 +39,9 @@ function Layout({ children }: { children: React.ReactNode }) {
   const [provider, setProvider] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/provider').then(r => r.json())
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+    const providerUrl = backendUrl.replace(/\/api$/, '') + '/api/provider';
+    fetch(providerUrl).then(r => r.json())
       .then(d => setProvider(d.provider))
       .catch(() => { })
   }, [])
