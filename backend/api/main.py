@@ -194,8 +194,8 @@ async def run_cycle_background(cycle_id: str, initial_state: dict):
 # ── Endpoints ────────────────────────────────────────────
 
 @app.post("/api/cycles/start")
-async def start_cycle(req: StartCycleRequest):
-    """Start a new trading cycle using Celery."""
+async def start_cycle(req: StartCycleRequest, background_tasks: BackgroundTasks):
+    """Start a new trading cycle using BackgroundTasks."""
     cycle_id = str(uuid.uuid4())
 
     # Persist cycle to DB
@@ -235,8 +235,7 @@ async def start_cycle(req: StartCycleRequest):
         "portfolio_snapshot":  {},
     }
 
-    from worker import run_cycle_task
-    run_cycle_task.delay(cycle_id, initial_state)
+    background_tasks.add_task(run_cycle_background, cycle_id, initial_state)
     
     return {"cycle_id": cycle_id, "status": "started", "mode": req.mode, "market": req.market}
 
